@@ -10,7 +10,8 @@
 #'  and their N input values.
 #'  
 #' The functions calculates the N input by 
-#'  organic fertilization with the [CN_input_amendments()] function. 
+#'  organic fertilization with the [calculate_N_input_tibble()] and the 
+#'  [CN_input_amendments()] function. 
 #'  Furthermore, it calculates the livestock intensity (`LSU/ha`) by deviding 
 #'  the animal derived N by `105kgN/LSU`.
 #'  
@@ -20,6 +21,7 @@
 #' * [calculate_indicators()] to calculate all management indicators 
 #'    for a `management_df`
 #' * [CN_input_amendments()] for the calculation of N inputs from organic amendments
+#' * [calculate_N_input_tibble()] a helper function that calculates the N input tibble
 #' 
 #' @md
 #'      
@@ -31,6 +33,14 @@
 #' 
 #' 
 #' @return  by default, a tibble with N input values (organic N, mineral N and total N) by year is returned. If extended.output = TRUE, a tibble with daily resolution is returned. 
+#' 
+#' @seealso 
+#' * [calculate_indicators()] to calculate all management indicators 
+#'    for a `management_df`
+#' * [CN_input_amendments()] for the calculation of N inputs from organic amendments
+#' * [calculate_N_input_tibble()] a helper function that calculates the N input tibble
+#' 
+#' @md
 #' 
 #' 
 #' @examples
@@ -48,63 +58,16 @@ N_input <- function(var_MGMT_data, extended.output = FALSE) {
   # Check if the data is of the right class   -------------
   if (!("management_df" %in% class(var_MGMT_data))) {stop("Input if not of the class management_df")}
   
-  # extract all years
+  # extract all years --------------
   tibble_years <- var_MGMT_data %>%
     dplyr::ungroup() %>%
     dplyr::select(year) %>%
     unique()
   
-  # Calculate N inputs by organic amendments  -------------
-  var_MGMT_data_amendments <- var_MGMT_data %>%
-    dplyr::rowwise() %>%
-    dplyr::filter (operation == "organic_fertilization")
-  
-  if (nrow(var_MGMT_data_amendments) > 0) {
-    var_MGMT_data_amendments <- var_MGMT_data_amendments %>%
-          dplyr::mutate(N_input_org = as.integer(CN_input_amendments(value, amd_type=product, C_content = C_content,
-                                                                 N_content = N_content, DMC = DMC)[2]))
-  } else {
-    var_MGMT_data_amendments <- var_MGMT_data_amendments %>%
-      dplyr::mutate(N_input_org = NA)
-  }
-  
-  var_MGMT_data <- dplyr::left_join(var_MGMT_data,var_MGMT_data_amendments, by = dplyr::join_by(crop, year, date, category, operation, device, value, unit, machine, product, combination,
-                                                                                                comments, DMC, C_content, N_content, crop_product, crop_residue, Cc_product, Cc_residue)) %>%
-    dplyr::select(crop,year,date,category,operation,device,value,unit,machine,product,combination,comments,N_input_org)
-  
-  rm(var_MGMT_data_amendments)
-  
-  
-  # Select events with N inputs and calculate inputs  -------------
-  
-  var_MGMT_data_N <- var_MGMT_data %>%
-    dplyr::filter(N_input_org >= 0 | unit == "kg N/ha")
-  
-  var_MGMT_data_N <- var_MGMT_data_N %>% 
-    dplyr::rowwise() %>%
-    dplyr::mutate(N_input_min = dplyr::case_when(
-      operation == "organic_fertilization" ~ 0,
-      operation == "mineral_fertilization" ~ value)) %>%
-    tidyr::replace_na(list(N_input_org = 0)) %>%
-    dplyr::mutate(N_input = N_input_org + N_input_min) %>%
-    dplyr::group_by(year)
-  
-  # Calculate Livestock intensity -------------
-  
-  animal_origin <- CN_input_amendments_LUT %>% 
-    dplyr::filter(animal_origin == TRUE) %>% 
-    dplyr::select(Amendment)
-  
-  animal_origin <- animal_origin$Amendment
-  
-  var_MGMT_data_N <- var_MGMT_data_N %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(LSU = dplyr::case_when(product %in% animal_origin ~ N_input_org / 105,
-                                           TRUE ~ 0)) %>%
-    dplyr::group_by(year)
+  # calculate N input tibble
+  var_MGMT_data_N <- calculate_N_input_tibble(var_MGMT_data)
   
   # Aggregate by year -------------
-  
   output_tibble <- var_MGMT_data_N %>%
     dplyr::ungroup() %>%
     dplyr::group_by(year) %>%
@@ -124,7 +87,7 @@ N_input <- function(var_MGMT_data, extended.output = FALSE) {
                                                           category, operation,
                                                           device, value, unit,
                                                           machine, product, combination,
-                                                          comments, N_input_org))
+                                                          comments))
   } 
   
   return(output_tibble)

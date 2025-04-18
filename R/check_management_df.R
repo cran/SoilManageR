@@ -4,7 +4,8 @@
 #'  It formally checks the class and the column names.
 #'  Additionally, the function checks if dates are consistently increasing
 #'  and if all organic amendments, tillage and sowing devices and crops
-#'  are in the relevant look-up-tables. 
+#'  are in the relevant look-up-tables. It is checked if the are operations
+#'  where the device is not mentioned.
 #'  Furthermore, the amount of organic amendments (<100t/ha) and
 #'  N fertilizer (<100kgN/ha) application rates per event are checked.
 #'  The depth of tillage operations are compared with the min and max depth
@@ -15,12 +16,13 @@
 #' @details
 #' The order of tillage, sowing and harvest operations are checked with the following assumptions:
 #' * after "stubble_cultivation" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-#' * after "primary_tillage" the following operations are allowed: "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+#' * after "primary_tillage" the following operations are allowed: "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 #' * after "seedbed_preparation" the following operations are allowed: "stubble_cultivation", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-#' * after "sowing_main_crop" the following operations are allowed: "sowing_main_crop", "harvest_main_crop"
-#' * after "sowing_cover_crop" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-#' * after "harvest_main_crop" the following operations are allowed: "harvest_main_crop", "straw_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+#' * after "sowing_main_crop" the following operations are allowed: "sowing_main_crop", "harvest_main_crop", "sowing_cover_crop"
+#' * after "sowing_cover_crop" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop", "harvest_main_crop"
+#' * after "harvest_main_crop" the following operations are allowed: "harvest_main_crop", "straw_removal", "hay_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 #' * after "straw_removal" the following operations are allowed: "harvest_main_crop", "straw_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+#' * after "hay_removal" the following operations are allowed: "harvest_main_crop", "hay_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 #' 
 #' Additionally, there are exceptions for potato crops: "bedder" can be used after a "potato_planter" and "mulching" can be applied before a "potato_harvester"
 #' @md
@@ -98,6 +100,23 @@ check_management_df <- function(var_MGMT_data) {
   if (FALSE %in% (lubridate::year(var_MGMT_data$date)==var_MGMT_data$year)) {
     warning("Year and Date are not allways matching")}
   
+  # Check if there are missing devices -------------------
+  var_MGMT_check <- var_MGMT_data %>%
+    dplyr::filter(category %in% c("tillage",
+    "sowing",
+    "fertilizer_application",
+    "crop_protection",
+    "harvest",
+    "irrigation")) %>%
+    dplyr::select(device) %>%
+    dplyr::filter(is.na(device))
+  
+  if(nrow(var_MGMT_check) != 0) {warning("At least one device is not specified. Check if this is an error. STIR value calculation and other functions may be affected by missing devices.")}
+  
+  rm(var_MGMT_check)
+
+  
+  
   # Check if all entries exist in the relevant LOT -------------------
   
   # Check if organic amendments are in the CN_input_amendments_LUT.rda
@@ -155,12 +174,13 @@ check_management_df <- function(var_MGMT_data) {
     
     
     after_stubble_cultivation <- c("stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
-    after_primary_tillage <- c("seedbed_preparation","sowing_main_crop","sowing_cover_crop")
+    after_primary_tillage <- c("primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
     after_seedbed_preparation <- c("stubble_cultivation","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
-    after_sowing_main_crop <- c("sowing_main_crop","harvest_main_crop")
-    after_sowing_cover_crop <- c("stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
-    after_harvest_main_crop <- c("harvest_main_crop","straw_removal","stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
+    after_sowing_main_crop <- c("sowing_main_crop","harvest_main_crop","sowing_cover_crop")
+    after_sowing_cover_crop <- c("stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop","harvest_main_crop")
+    after_harvest_main_crop <- c("harvest_main_crop","straw_removal","hay_removal","stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
     after_straw_removal <- c("harvest_main_crop","straw_removal","stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
+    after_hay_removal <- c("harvest_main_crop","hay_removal","stubble_cultivation","primary_tillage","seedbed_preparation","sowing_main_crop","sowing_cover_crop")
     
     order_of_operations <- var_MGMT_data %>%
       dplyr::ungroup() %>%
@@ -179,6 +199,7 @@ check_management_df <- function(var_MGMT_data) {
         operation == "sowing_cover_crop" ~ dplyr::case_when(next.operation %in% after_sowing_cover_crop ~ TRUE, TRUE ~ FALSE),
         operation == "harvest_main_crop" ~ dplyr::case_when(next.operation %in% after_harvest_main_crop ~ TRUE, TRUE ~ FALSE),
         operation == "straw_removal" ~ dplyr::case_when(next.operation %in% after_straw_removal ~ TRUE, TRUE ~ FALSE),
+        operation == "hay_removal" ~ dplyr::case_when(next.operation %in% after_hay_removal ~ TRUE, TRUE ~ FALSE),
         TRUE ~ FALSE
       )) %>%
       dplyr::filter(check_next_operation == FALSE | dplyr::lag(check_next_operation) == FALSE | dplyr::lead(check_next_operation) == FALSE)

@@ -31,7 +31,8 @@ Alternatively, it can return a extensive tibble with all management operations
 and their N input values.
 
 The functions calculates the N input by
-organic fertilization with the \code{\link[=CN_input_amendments]{CN_input_amendments()}} function.
+organic fertilization with the \code{\link[=calculate_N_input_tibble]{calculate_N_input_tibble()}} and the
+\code{\link[=CN_input_amendments]{CN_input_amendments()}} function.
 Furthermore, it calculates the livestock intensity (\code{LSU/ha}) by deviding
 the animal derived N by \verb{105kgN/LSU}.
 
@@ -49,5 +50,13 @@ N_input(EXAMPLE_data, extended.output = TRUE)
 \item \code{\link[=calculate_indicators]{calculate_indicators()}} to calculate all management indicators
 for a \code{management_df}
 \item \code{\link[=CN_input_amendments]{CN_input_amendments()}} for the calculation of N inputs from organic amendments
+\item \code{\link[=calculate_N_input_tibble]{calculate_N_input_tibble()}} a helper function that calculates the N input tibble
+}
+
+\itemize{
+\item \code{\link[=calculate_indicators]{calculate_indicators()}} to calculate all management indicators
+for a \code{management_df}
+\item \code{\link[=CN_input_amendments]{CN_input_amendments()}} for the calculation of N inputs from organic amendments
+\item \code{\link[=calculate_N_input_tibble]{calculate_N_input_tibble()}} a helper function that calculates the N input tibble
 }
 }

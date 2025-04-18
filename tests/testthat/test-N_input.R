@@ -9,6 +9,6 @@ test_that("test EXAMPLE data", {
                                                        N_input_min = 0,
                                                        N_input = 126,
                                                        LSU = 0))
-  expect_equal(N_input(EXAMPLE_data, extended.output = TRUE)[2,15] %>% as.integer (),
+  expect_equal(N_input(EXAMPLE_data, extended.output = TRUE)[2,20] %>% as.integer (),
                67)
 })

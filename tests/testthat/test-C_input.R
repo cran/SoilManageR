@@ -11,5 +11,5 @@ test_that("test EXAMPLE data", {
                                                        C_input_crop = 1112,
                                                        C_input_cover_crop= 0))
   expect_equal(C_input(EXAMPLE_data, extended.output = TRUE)[37,20],
-               dplyr::tibble(C_input_CC = 2045))
+               dplyr::tibble(C_input_CC = 2197))
 })

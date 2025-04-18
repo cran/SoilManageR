@@ -38,5 +38,6 @@ tillage_intensity(EXAMPLE_data, extended.output = TRUE)
 \item \code{\link[=STIR_values_LUT]{STIR_values_LUT()}} for the reference data used for tillage operations
 \item \code{\link[=calculate_indicators]{calculate_indicators()}} to calculate all management indicators
 for a \code{management_df}
+\item \code{\link[=calculate_STIR_tibble]{calculate_STIR_tibble()}} a helper function that calculates the STIR input tibble
 }
 }

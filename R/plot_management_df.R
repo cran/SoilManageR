@@ -2,16 +2,17 @@
 #' 
 #' Visual representation of a management_df.
 #' 
-#' The colors in the background represent the soil cover by plants (green), 
-#'  and crop residues (brown). "T" indicates tillage event with a STIR value >= 0.
+#' The colors in the background represent the soil cover by main crops (dark green),
+#' cover crops (light green), and crop residues (brown). 
+#' "T" indicates tillage event with a STIR value >= 0.
 #' "P" indicates a crop protection event.
-#' Dotted vertical lines represent sowing events, the sown crop is noted in 
-#'  the lowest quarter at the right side of the line.
-#' The values in the middle indicate C inputs into the soil system, either 
-#'  by crops, cover crops or organic amendments. Negative values are withdrawls
-#'  by residue removal.
+#' The values in the middle indicate C inputs into the soil system im MgC/ha, either 
+#' by crops (C), residue removal (R), cover crops (CC) or organic amendments (OA). 
+#' Negative values are withdrawls by residue removal.
+#' Dotted vertical lines represent sowing events, the sown crop or cover crop
+#' is noted in the lowest quarter at the right side of the line.
 #' Note that large management_df can be heavy to compute and the plots may be
-#'  messy.
+#' messy.
 #'
 #' @param management_df a management data frame
 #' @param title the title of the plot
@@ -33,14 +34,14 @@ plot_management_df <- function(management_df, title="Management Timeline") {
   STIR_data <- tillage_intensity(management_df, extended.output = TRUE)
   soil_cover_data <- soil_cover(management_df, extended.output = TRUE)
   
-  # Define plot (use soil cover plot)
+  # Define plot (use soil cover plot) --------------------------- 
   plot <- plot(soil_cover_data)
   
   # Redefine title
   plot <- plot + ggplot2::ggtitle(title)
   
   # Add relevant events
-  # Horizontal lines for sowing event
+  # Horizontal lines for sowing event ---------------------------
   # Define events
   sowing_events <- subset(management_df, category == "sowing")
   sowing_CC <- subset(sowing_events, operation == "sowing_cover_crop")
@@ -67,7 +68,7 @@ plot_management_df <- function(management_df, title="Management Timeline") {
                                    vjust = 1.5, hjust = 0,
                                    size = 3)
   
-  # Tillage events with STIR values
+  # Tillage events with STIR values ---------------------
   # Define events
   tillage_events <- subset(STIR_data, !is.na(STIR_data$STIR) & STIR_data$STIR > 0)
   
@@ -79,7 +80,7 @@ plot_management_df <- function(management_df, title="Management Timeline") {
                                    vjust = 0.5, hjust = 0.5,
                                    size = 3)
   
-  # Crop protection events
+  # Crop protection events ------------------------------
   # Define events
   crop_protection_events <- subset(management_df, category == "crop_protection")
   
@@ -91,7 +92,7 @@ plot_management_df <- function(management_df, title="Management Timeline") {
                                    vjust = 0.5, hjust = 0.5,
                                    size = 3)
   
-  # C inputs
+  # Add C inputs -------------------------------------
   # Define events
   C_events <- subset(C_input_data, !(is.na(C_input_data$C_input_org)) | 
                        !(is.na(C_input_data$C_input_crop)) | 
@@ -100,20 +101,21 @@ plot_management_df <- function(management_df, title="Management Timeline") {
                            "C_input_org", "C_input_crop", "C_input_CC")]
   
   C_org_events <- subset(C_events, !is.na(C_events$C_input_org))
-  C_crop_events <- subset(C_events, !is.na(C_events$C_input_crop))
+  C_crop_events <- subset(C_events, !is.na(C_events$C_input_crop) & C_events$C_input_crop >= 0)
+  C_resid_events <- subset(C_events, !is.na(C_events$C_input_crop) & C_events$C_input_crop < 0)
   C_CC_events <- subset(C_events, !is.na(C_events$C_input_CC))
   
   # Add C labels
   plot <- plot + ggplot2::annotate(geom = "text",
-                                   label = paste("organic:", C_org_events$C_input_org, "kgC/ha"),
+                                   label = paste("OA:", round(C_org_events$C_input_org/1000,1)),
                                    x = C_org_events$date,
-                                   y = 40,
+                                   y = 60,
                                    angle = 90,
                                    vjust = -1, hjust = 0,
                                    size = 3)
   
   plot <- plot + ggplot2::annotate(geom = "text",
-                                   label = paste("crop:", C_crop_events$C_input_crop, "kgC/ha"),
+                                   label = paste("C:", round(C_crop_events$C_input_crop/1000,1)),
                                    x = C_crop_events$date,
                                    y = 40,
                                    angle = 90,
@@ -121,7 +123,15 @@ plot_management_df <- function(management_df, title="Management Timeline") {
                                    size = 3)
   
   plot <- plot + ggplot2::annotate(geom = "text",
-                                   label = paste("cover crop:", C_CC_events$C_input_CC, "kgC/ha"),
+                                   label = paste("R:", round(C_resid_events$C_input_crop/1000,1)),
+                                   x = C_resid_events$date,
+                                   y = 50,
+                                   angle = 90,
+                                   vjust = -1, hjust = 0,
+                                   size = 3)
+  
+  plot <- plot + ggplot2::annotate(geom = "text",
+                                   label = paste("CC:", round(C_CC_events$C_input_CC/1000,1)),
                                    x = C_CC_events$date,
                                    y = 40,
                                    angle = 90,

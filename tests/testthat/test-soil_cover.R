@@ -5,8 +5,8 @@ test_that("input error", {
 
 test_that("test EXAMPLE data", {
   expect_equal(soil_cover(EXAMPLE_data)[2,],dplyr::tibble(year = 2014,
-                                                          soil_cover_days = 259,
-                                                          plant_cover_days = 236,
+                                                          soil_cover_days = 260,
+                                                          plant_cover_days = 237,
                                                           residue_cover_days = 23
                                                       ))
 
@@ -14,6 +14,8 @@ test_that("test EXAMPLE data", {
                                     date = as.Date("2018-06-23"),
                                     soil_cover = 100,
                                     plant_cover = 100,
+                                    crop_cover = 100,
+                                    CC_cover = 0,
                                     residue_cover = 0,
                                     soil_cover_days = 1,
                                     plant_cover_days = 1,

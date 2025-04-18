@@ -18,16 +18,17 @@ a plot
 Visual representation of a management_df.
 }
 \details{
-The colors in the background represent the soil cover by plants (green), 
- and crop residues (brown). "T" indicates tillage event with a STIR value >= 0.
+The colors in the background represent the soil cover by main crops (dark green),
+cover crops (light green), and crop residues (brown). 
+"T" indicates tillage event with a STIR value >= 0.
 "P" indicates a crop protection event.
-Dotted vertical lines represent sowing events, the sown crop is noted in 
- the lowest quarter at the right side of the line.
-The values in the middle indicate C inputs into the soil system, either 
- by crops, cover crops or organic amendments. Negative values are withdrawls
- by residue removal.
+The values in the middle indicate C inputs into the soil system im MgC/ha, either 
+by crops (C), residue removal (R), cover crops (CC) or organic amendments (OA). 
+Negative values are withdrawls by residue removal.
+Dotted vertical lines represent sowing events, the sown crop or cover crop
+is noted in the lowest quarter at the right side of the line.
 Note that large management_df can be heavy to compute and the plots may be
- messy.
+messy.
 }
 \examples{
 

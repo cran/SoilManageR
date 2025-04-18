@@ -10,6 +10,7 @@
 #' * [STIR_values_LUT()] for the reference data used for tillage operations
 #' * [calculate_indicators()] to calculate all management indicators 
 #'    for a `management_df`
+#' * [calculate_STIR_tibble()] a helper function that calculates the STIR input tibble
 #'   
 #'     
 #' @param var_MGMT_data a `management_df` that contains the management information
@@ -38,32 +39,9 @@ tillage_intensity <- function(var_MGMT_data,extended.output = FALSE) {
   # Check if the data is of the right class   -------------
   if (!("management_df" %in% class(var_MGMT_data))) {stop("Input if not of the class management_df")}
   
-  # select relevant management events ----------------
-  var_MGMT_data_STIR <- var_MGMT_data %>%
-    dplyr::filter(device %in% STIR_values_LUT$Operation) %>%
-    dplyr::select(-DMC,-C_content,-N_content,-crop_product,-crop_residue,-Cc_product,-Cc_residue) %>%
-    dplyr::mutate(STIR = NA)
+  # calucate STIR tibble ----------------
   
-  # exclude multiple sowing operations with the same device at the same date (e.g. mixtures of cover crops) ------
-  var_MGMT_data_STIR <- var_MGMT_data_STIR %>%
-    dplyr::ungroup() %>%
-    dplyr::filter((date != dplyr::lag(date) & device != dplyr::lag(device)) | #exclude events with same date and device
-                    category != "sowing" | # only apply it to sowing events
-                     is.na(dplyr::lag(category))) # always include the first line of the dataset
-  
-  # exclude multiple liquid_injections at the same date ------
-  var_MGMT_data_STIR <- var_MGMT_data_STIR %>%
-    dplyr::ungroup() %>%
-    dplyr::filter((date != dplyr::lag(date) & device != dplyr::lag(device)) | #exclude events with same date and device
-                    device != "liquid_injection" | # only apply it to liquid_injection devicdes
-                    is.na(dplyr::lag(category))) # always include the first line of the dataset
-  
-  # calculate STIR ----------------
-  var_MGMT_data_STIR <- var_MGMT_data_STIR %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(STIR = dplyr::case_when(
-      unit == "cm" ~ STIR(device, depth = value),
-      TRUE ~ STIR(device)))
+  var_MGMT_data_STIR <- calculate_STIR_tibble(var_MGMT_data)
   
   # aggregate per year ----------------
   var_MGMT_data_STIR <- dplyr::left_join(var_MGMT_data,var_MGMT_data_STIR,

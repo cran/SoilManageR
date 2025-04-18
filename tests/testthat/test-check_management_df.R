@@ -8,8 +8,6 @@ test_that("test EXAMPLE data", {
   expect_equal(suppressMessages(check_management_df(EXAMPLE_data)),NULL)
 })
 
-rm(expected_output)
-
 suppressMessages(
   test_that("test EXAMPLE data", {
     expect_message(check_management_df(EXAMPLE_data))

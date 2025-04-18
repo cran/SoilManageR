@@ -9,12 +9,12 @@
 #'  in the "product" column, and all sown species of mixtures must be 
 #'  represented in a single row of the `management_df` each.
 #' 
-#' The function calculates the plant diversity index (\eqn{PDI}), the total
+#' The function calculates the crop diversity index (\eqn{CDI}), the total
 #'  number of different species, and the Shannon index  for all sown species.
 #' 
-#' The \eqn{PDI} is calculated in the following way inspired by 
+#' The \eqn{CDI} is calculated in the following way inspired by 
 #'  \insertCite{Tiemann_2015;textual}{SoilManageR}: 
-#'  \deqn{PDI = \overline{S_{year}} * S_{rotation}}
+#'  \deqn{CDI = \overline{S_{year}} * S_{rotation}}
 #'  where \eqn{\overline{S_{year}}} is the average number of sown species per 
 #'  year and \eqn{S_{rotation}} is the total number of different species 
 #'  sown in the full crop rotation or cropping sequence.
@@ -55,20 +55,20 @@ plant_diversity <- function(var_MGMT_data,start_year,end_year) {
   if (!(is.integer(start_year))) {stop("start_year is no integer")}
   if (!(is.integer(end_year))) {stop("start_year is no integer")}
   
-  # PDI with the Tiemann approach
+  # CDI with the Tiemann approach
     # Filter data  -------------  
-    var_MGMT_data_PDI <- var_MGMT_data %>%
+    var_MGMT_data_CDI <- var_MGMT_data %>%
       dplyr::filter(year >= start_year,
                     year <= end_year)
     
-    var_MGMT_data_PDI <- var_MGMT_data_PDI %>%
+    var_MGMT_data_CDI <- var_MGMT_data_CDI %>%
       dplyr::group_by(year) %>%
       dplyr::filter(category == "sowing") %>%
       dplyr::filter(device != "roller")
       
     
     # calculate average number of distinct products seeded per per year ----------------
-    PDI_avg_year <- var_MGMT_data_PDI %>% 
+    CDI_avg_year <- var_MGMT_data_CDI %>% 
       dplyr::select(year,product) %>% 
       dplyr::distinct() %>% 
       dplyr::summarise(count = dplyr::n()) %>%
@@ -78,7 +78,7 @@ plant_diversity <- function(var_MGMT_data,start_year,end_year) {
       as.numeric()
     
     # calculate total main crops (products = varieties) per rotation ----------------
-    PDI_total_main_crop <- var_MGMT_data_PDI %>%
+    CDI_total_main_crop <- var_MGMT_data_CDI %>%
       dplyr::filter(operation == "sowing_main_crop") %>%
       dplyr::ungroup() %>%
       dplyr::select(crop,product) %>%
@@ -87,7 +87,7 @@ plant_diversity <- function(var_MGMT_data,start_year,end_year) {
       as.numeric() 
     
     # calculate total cover crops products per rotation ----------------
-    PDI_total_cover_crop <- var_MGMT_data_PDI %>%
+    CDI_total_cover_crop <- var_MGMT_data_CDI %>%
       dplyr::filter(operation == "sowing_cover_crop") %>%
       dplyr::ungroup() %>%
       dplyr::select(product) %>%
@@ -96,11 +96,11 @@ plant_diversity <- function(var_MGMT_data,start_year,end_year) {
       as.numeric() 
     
     # calculate PDI_Tiemann ----------------
-    PDI_Tiemann <- PDI_avg_year * (PDI_total_cover_crop + PDI_total_main_crop)
+    CDI_Tiemann <- CDI_avg_year * (CDI_total_cover_crop + CDI_total_main_crop)
   
   # Count species per rotation -----------
-    Species_rotation <- PDI_total_cover_crop + PDI_total_main_crop
-    rm(PDI_total_cover_crop,PDI_total_main_crop,PDI_avg_year,var_MGMT_data_PDI)
+    Species_rotation <- CDI_total_cover_crop + CDI_total_main_crop
+    rm(CDI_total_cover_crop,CDI_total_main_crop,CDI_avg_year,var_MGMT_data_CDI)
     
   # Calculate Shannon index for sowing events -----------
     # Filter data  -------------  
@@ -128,5 +128,5 @@ plant_diversity <- function(var_MGMT_data,start_year,end_year) {
     
     
   # return results ----------------
-  return(tibble::tibble(PDI_Tiemann,Species_rotation,Shannon))
+  return(tibble::tibble(CDI_Tiemann,Species_rotation,Shannon))
 }

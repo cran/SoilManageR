@@ -17,7 +17,8 @@ The function checkes objects of the class \code{\link[=management_df]{management
 It formally checks the class and the column names.
 Additionally, the function checks if dates are consistently increasing
 and if all organic amendments, tillage and sowing devices and crops
-are in the relevant look-up-tables.
+are in the relevant look-up-tables. It is checked if the are operations
+where the device is not mentioned.
 Furthermore, the amount of organic amendments (<100t/ha) and
 N fertilizer (<100kgN/ha) application rates per event are checked.
 The depth of tillage operations are compared with the min and max depth
@@ -29,12 +30,13 @@ for plausibility (see details for more information).
 The order of tillage, sowing and harvest operations are checked with the following assumptions:
 \itemize{
 \item after "stubble_cultivation" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-\item after "primary_tillage" the following operations are allowed: "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+\item after "primary_tillage" the following operations are allowed: "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 \item after "seedbed_preparation" the following operations are allowed: "stubble_cultivation", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-\item after "sowing_main_crop" the following operations are allowed: "sowing_main_crop", "harvest_main_crop"
-\item after "sowing_cover_crop" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
-\item after "harvest_main_crop" the following operations are allowed: "harvest_main_crop", "straw_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+\item after "sowing_main_crop" the following operations are allowed: "sowing_main_crop", "harvest_main_crop", "sowing_cover_crop"
+\item after "sowing_cover_crop" the following operations are allowed: "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop", "harvest_main_crop"
+\item after "harvest_main_crop" the following operations are allowed: "harvest_main_crop", "straw_removal", "hay_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 \item after "straw_removal" the following operations are allowed: "harvest_main_crop", "straw_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
+\item after "hay_removal" the following operations are allowed: "harvest_main_crop", "hay_removal", "stubble_cultivation", "primary_tillage", "seedbed_preparation", "sowing_main_crop", "sowing_cover_crop"
 }
 
 Additionally, there are exceptions for potato crops: "bedder" can be used after a "potato_planter" and "mulching" can be applied before a "potato_harvester"

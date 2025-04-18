@@ -7,8 +7,8 @@
 C_input_cover_crops(
   abvg_biomass = NA,
   days = 180,
-  min_C_abvg = 1253,
-  min_days = 180,
+  min_C_abvg = 0,
+  min_days = 0,
   max_C_abvg = 1916,
   max_days = 240,
   Cc_biomass = 450
@@ -47,15 +47,15 @@ based on the duration of the cover crop stand.
 \code{\link[=C_input_cover_crops]{C_input_cover_crops()}} internally calls \code{\link[=C_input_crops]{C_input_crops()}} to calculate the
 different C fractions. The C in the above ground biomass (\eqn{C_{Product}})
 is a function of the time a cover crop is established. A minimum and
-a maximum cover crop biomass are assumed at 180 and 240 days respectively,
+a maximum cover crop biomass are assumed at 0 and 240 days respectively,
 and linearly interpolated for the period in between.
 \deqn{C_{Product} = \begin{cases} 
- 1253\ kgC/ha \ , \ duration < 180 \ days \\
- 1253 \ kgC/ha \ + \ (duration - 180  \ days) \ * \frac{663 \ kgC/ha}{60 \ days} \     , \ 180 \ days \leq duration \leq 240 \ days \\
+ 0 \ kgC/ha \ , \ duration = 0 \ days \\
+ duration \ * \frac{1916 \ kgC/ha}{240 \ days} \     , \ 0 \ days < duration \leq 240 \ days \\
  1916 \ kgC/ha \ , \ duration > 240 \ days
  \end{cases}}
 
-Assumptions on the C inputs at day 180 and 240 are based on values
+Assumptions on the C inputs at day 240 are based on values
 extracted from \insertCite{seitz2022;textual}{SoilManageR}.
 
 The remaining parameters to calculate the C input by cover crops are

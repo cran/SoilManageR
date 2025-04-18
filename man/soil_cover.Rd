@@ -13,7 +13,7 @@ soil_cover(var_MGMT_data, extended.output = FALSE)
 \itemize{
 \item If FALSE, soil cover days are aggregated by year.
 \item If TRUE, a soil_cover_tibble with daily resolution is returned.
-\item Defaul value is FALSE
+\item Default value is FALSE
 }}
 }
 \value{
@@ -81,6 +81,7 @@ coefficient \eqn{[m^2/g]}. \eqn{k} was assumed to be \code{0.0175}
 \itemize{
 \item \code{\link[=calculate_indicators]{calculate_indicators()}} to calculate all management indicators
 for a \code{management_df}
+\item \code{\link[=calculate_soil_cover_tibble]{calculate_soil_cover_tibble()}} a helper function that calculates the soil cover tibble
 \item \code{\link[=plant_cover]{plant_cover()}} for more detail on the plant cover function
 \item \code{\link[=plot.soil_cover_tibble]{plot.soil_cover_tibble()}} for plotting the \code{soil_cover_tibble}
 \item \code{STIR_values_LUT} for tillage operation specific burial coefficients

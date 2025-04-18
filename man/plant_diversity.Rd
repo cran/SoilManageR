@@ -25,12 +25,12 @@ For the function to work properly the species (or variety) must be mentioned
 in the "product" column, and all sown species of mixtures must be
 represented in a single row of the \code{management_df} each.
 
-The function calculates the plant diversity index (\eqn{PDI}), the total
+The function calculates the crop diversity index (\eqn{CDI}), the total
 number of different species, and the Shannon index  for all sown species.
 
-The \eqn{PDI} is calculated in the following way inspired by
+The \eqn{CDI} is calculated in the following way inspired by
 \insertCite{Tiemann_2015;textual}{SoilManageR}:
-\deqn{PDI = \overline{S_{year}} * S_{rotation}}
+\deqn{CDI = \overline{S_{year}} * S_{rotation}}
 where \eqn{\overline{S_{year}}} is the average number of sown species per
 year and \eqn{S_{rotation}} is the total number of different species
 sown in the full crop rotation or cropping sequence.

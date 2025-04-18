@@ -4,8 +4,9 @@
 #'  for a tibble with different species.
 #'  
 #' The formula that is used is 
-#' \deqn{SI = -\sum_{S=1}^i (p_i * ln(p_i))}
-#' where \eqn{p_i} is the relative abundance of each species (\eqn{S}).
+#' \deqn{SI = -\sum_{i=1}^S (p_i * ln(p_i))}
+#' where \eqn{p_i} is the relative abundance of each species (\eqn{i}) of 
+#' the total number of species (\eqn{S}).
 #' 
 #' @md
 #' 

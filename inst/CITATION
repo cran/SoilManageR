@@ -1,10 +1,13 @@
 bibentry(
   "Article",
-  title = "SoilManageR – R Package for deriving soil management indicators to foster agricultural practice assessment",
-  author = "Olivier Heller and Andreas Chervet and Fabien Durand-Maniclas and Thomas Guillaume
-  and Franziska Häfner and Michael Müller and Raphaël Wittwer and Thomas Keller",
-  note = "R package version 1.0",
-  year = "2024",
-  url = "https://gitlab.com/SoilManageR/",
-  journal = "submitted to EJSS",
+  title = "SoilManageR — An R Package for Deriving Soil Management Indicators to Harmonise Agricultural Practice Assessments",
+  volume = "76",
+  ISSN = "1365-2389",
+  DOI = "10.1111/ejss.70102",
+  number = "2",
+  journal = "European Journal of Soil Science",
+  publisher = "Wiley",
+  author = "Olivier Heller and Andreas Chervet and Fabien Durand‐Maniclas and Thomas Guillaume and Franziska Häfner and Michael Müller and Raphaël Wittwer and Thomas Keller",
+  year = "2025"
 )
+

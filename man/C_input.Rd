@@ -50,6 +50,7 @@ C_input(EXAMPLE_data, extended.output = TRUE)
 \itemize{
 \item \code{\link[=calculate_indicators]{calculate_indicators()}} to calculate all management indicators
 for a \code{management_df}
+\item \code{\link[=calculate_C_input_tibble]{calculate_C_input_tibble()}} a helper function that calculates the C input tibble
 \item \code{\link[=C_input_crops]{C_input_crops()}} to calculate C input for crops
 \item \code{\link[=C_input_cover_crops]{C_input_cover_crops()}} to calculate C input for cover crops
 \item \code{\link[=CN_input_amendments]{CN_input_amendments()}} to calculate C (and N) inputs for organic amendments

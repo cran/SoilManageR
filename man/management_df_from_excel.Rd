@@ -34,7 +34,7 @@ inst/extdata/SoilManageR_mgmt_data_template. Optionaly, the parameter
 \examples{
 #create path
 path_to_xlsx_template <- system.file(
-"/extdata/SoilManageR_mgmt_data_template_V2.5.xlsx", package = "SoilManageR")
+"/extdata/SoilManageR_mgmt_data_template_V2.6.xlsx", package = "SoilManageR")
 
 #load management_df
 management_df_from_excel(path_to_xlsx_template)
